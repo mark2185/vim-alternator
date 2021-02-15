@@ -12,6 +12,6 @@ Same goes for `g:alternator_source_extensions`
 
 Defaults:
 ```
-let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp' ]
+let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp', 'ipp' ]
 let g:alternator_source_extensions = [ 'c', 'cpp' ]
 ```

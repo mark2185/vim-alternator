@@ -1,28 +1,23 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
-" Version:    0.0.2
+" Version:    0.0.3
 
 if exists('g:loaded_alternator_plugin')
     finish
 endif
 let g:loaded_alternator_plugin = 1
 
-if !exists('g:alternator_header_extensions')
-    let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp' ]
-endif
-
-if !exists('g:alternator_source_extensions')
-    let g:alternator_source_extensions = [ 'c', 'cpp' ]
-endif
+let g:alternator_header_extensions = get( g:, 'alternator_header_extensions', [ 'h', 'hpp', 'tpp', 'ipp' ] )
+let g:alternator_source_extensions = get( g:, 'alternator_source_extensions', [ 'c', 'cpp',              ] )
 
 function! s:Alternate()
     let l:all_extensions = g:alternator_header_extensions + g:alternator_source_extensions
 
     let l:filename  = expand( '%:t:r' )
     let l:extension = expand( '%:e'   )
-    let l:extension_index = index( l:all_extensions, extension )
-    if ( l:extension_index >= 0 )
-        for i in range( l:extension_index + 1, l:extension_index + len( l:all_extensions ) - 1 )
+    let l:idx = index( l:all_extensions, extension )
+    if ( l:idx >= 0 )
+        for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
             let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
             let l:matches = expand( '**/' . l:searching_file )
             if ( l:matches ==# '**/' . l:searching_file )
