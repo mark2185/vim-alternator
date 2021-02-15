@@ -1,6 +1,6 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
-" Version:    0.0.1
+" Version:    0.0.2
 
 if exists('g:loaded_alternator_plugin')
     finish
@@ -56,9 +56,8 @@ function! s:Alternate()
             endif
             continue
         endfor
-    else
-        echom 'Cannot find a pair for ' . expand( '%:p' )
     endif
+    echom 'Cannot find a pair for ' . expand( '%:p' )
 endfunction
 
 command! -nargs=0 Alternate call s:Alternate()
