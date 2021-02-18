@@ -1,6 +1,6 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
-" Version:    0.0.3
+" Version:    0.0.4
 
 if exists('g:loaded_alternator_plugin')
     finish
@@ -34,7 +34,7 @@ function! s:Alternate()
                 endfor
 
                 while v:true
-                    echom 'Which file do you want to open? '
+                    echom 'Type number and <Enter> (<ESC> to cancel):'
                     let l:file_index = nr2char(getchar())
                     if ( l:file_index < len( l:split_matches ) )
                         execute 'edit ' . l:split_matches[ l:file_index ]
