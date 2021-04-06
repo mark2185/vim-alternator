@@ -2,12 +2,18 @@
 " Maintainer: Luka Markušić
 " Version:    0.0.4
 
-function! alternator#alternate()
+function! alternator#alternate() abort
     let l:all_extensions = g:alternator_header_extensions + g:alternator_source_extensions
 
     let l:filename  = expand( '%:t:r' )
     let l:extension = expand( '%:e'   )
     let l:idx = index( l:all_extensions, extension )
+
+    let l:old_wildignore = &wildignore
+    for pattern in g:alternator_blacklist_folders
+        let &wildignore.=printf( ",**/%s/**", pattern )
+    endfor
+
     if ( l:idx >= 0 )
         for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
             let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
@@ -29,6 +35,7 @@ function! alternator#alternate()
                     echom 'Type number and <Enter> (<ESC> to cancel):'
                     let l:file_index = nr2char(getchar())
                     if ( l:file_index < len( l:split_matches ) )
+                        let &wildignore = l:old_wildignore
                         execute 'edit ' . l:split_matches[ l:file_index ]
                         return
                     else
@@ -38,6 +45,7 @@ function! alternator#alternate()
             endif
 
             if ( filereadable( fnameescape( l:matches ) ) )
+                let &wildignore = l:old_wildignore
                 execute 'edit ' . fnameescape( l:matches )
                 return
             endif

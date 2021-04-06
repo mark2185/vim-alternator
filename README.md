@@ -8,10 +8,11 @@ If there are more matching files, it will go in a cycle, e.g. `Core.hpp -> Core.
 
 If you want to change the header extensions, use the `g:alternator_header_extensions` variable.
 
-Same goes for `g:alternator_source_extensions`
+Same goes for `g:alternator_source_extensions`.
 
 Defaults:
 ```
 let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp', 'ipp' ]
 let g:alternator_source_extensions = [ 'c', 'cpp' ]
+let g:alternator_blacklist_folders = [ '.git', 'node_modules' ]
 ```
