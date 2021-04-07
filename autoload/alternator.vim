@@ -9,6 +9,16 @@ function! alternator#alternate() abort
     let l:extension = expand( '%:e'   )
     let l:idx = index( l:all_extensions, extension )
 
+    " the most often usecase
+    for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
+        let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
+        let l:result = findfile( l:searching_file )
+        if l:result !=# ''
+            execute 'edit ' . l:result
+            return
+        endif
+    endfor
+
     let l:old_wildignore = &wildignore
     for pattern in g:alternator_blacklist_folders
         let &wildignore.=printf( ",**/%s/**", pattern )
