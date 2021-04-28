@@ -1,6 +1,5 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
-" Version:    0.0.4
 
 function! alternator#alternate() abort
     let l:all_extensions = g:alternator_header_extensions + g:alternator_source_extensions
@@ -44,6 +43,9 @@ function! alternator#alternate() abort
                 while v:true
                     echom 'Type number and <Enter> (<ESC> to cancel):'
                     let l:file_index = nr2char(getchar())
+                    if l:file_index ==# "\<ESC>"
+                        return
+                    endif
                     if ( l:file_index < len( l:split_matches ) )
                         let &wildignore = l:old_wildignore
                         execute 'edit ' . l:split_matches[ l:file_index ]
