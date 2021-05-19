@@ -11,4 +11,4 @@ let g:alternator_header_extensions = get( g:, 'alternator_header_extensions', [ 
 let g:alternator_source_extensions = get( g:, 'alternator_source_extensions', [ 'c', 'cpp',              ] )
 let g:alternator_blacklist_folders = get( g:, 'alternator_blacklist_folders', [ 'node_modules', '.git'   ] )
 
-command! -nargs=0 Alternate call alternator#alternate()
+command! -nargs=0 -bang Alternate call alternator#alternate(<bang>0)
