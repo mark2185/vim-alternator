@@ -1,6 +1,5 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
-" Version:    0.0.5
 
 if exists('g:loaded_alternator_plugin')
     finish

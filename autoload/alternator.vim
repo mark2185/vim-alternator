@@ -1,68 +1,65 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
 
+let s:old_wildignore = &wildignore
+
+function! s:enumerate( list ) abort
+    let l:result = deepcopy( a:list )
+    for i in range( 1, len( l:result ) )
+        let l:result[ i - 1 ] = printf( '%d: %s', i, l:result[ i -  1 ] )
+    endfor
+    return result
+endfunction
+
+function! s:updateWildignore() abort
+    let s:wildignore = &wildignore
+    let l:wildignore_pattern = join( map( deepcopy( g:alternator_blacklist_folders ), { -> printf( "**/%s/**", v:val ) } ), ',' )
+    if empty(&wildignore)
+        let &wildignore = l:wildignore_pattern
+    else
+        let &wildignore .= ',' . l:wildignore_pattern
+    endif
+endfunction
+
 function! alternator#alternate() abort
+    silent call s:updateWildignore()
+
     let l:all_extensions = g:alternator_header_extensions + g:alternator_source_extensions
 
     let l:filename  = expand( '%:t:r' )
     let l:extension = expand( '%:e'   )
     let l:idx = index( l:all_extensions, extension )
 
-    " the most often usecase
+    if l:idx < 0
+        echom printf('Extension %s not supported', l:extension)
+        return
+    endif
+
     for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
         let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
-        let l:result = findfile( l:searching_file )
-        if l:result !=# ''
-            execute 'edit ' . l:result
+        let l:matches = findfile( l:searching_file, '**', -1 )
+        if !empty( l:matches )
+            if len( l:matches ) > 1
+                let l:usr_input = inputlist( ['Which file do you want to open?'] + s:enumerate( l:matches ) )
+                if l:usr_input == 0 || l:usr_input == -1
+                    return
+                endif
+                let l:file_index = l:usr_input - 1
+                if l:file_index < 0 || l:file_index > len( l:matches ) - 1
+                    echo "\nIndex out of bounds"
+                    return
+                endif
+            endif
+
+            try
+                execute 'edit ' . l:matches[ get( l:, 'file_index', 0 ) ]
+            catch
+            endtry
+
+            let &wildignore = s:wildignore
             return
         endif
     endfor
 
-    let l:old_wildignore = &wildignore
-    for pattern in g:alternator_blacklist_folders
-        let &wildignore.=printf( ",**/%s/**", pattern )
-    endfor
-
-    if ( l:idx >= 0 )
-        for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
-            let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
-            let l:matches = expand( '**/' . l:searching_file )
-            if ( l:matches ==# '**/' . l:searching_file )
-                continue
-            endif
-
-            let l:split_matches = split( l:matches, '\n' )
-            if len( l:split_matches ) > 1
-                echom 'More than one match found:'
-                let l:i = 0
-                for file in l:split_matches
-                    echom printf( '%d: %s', l:i, file )
-                    let i = l:i + 1
-                endfor
-
-                while v:true
-                    echom 'Type number and <Enter> (<ESC> to cancel):'
-                    let l:file_index = nr2char(getchar())
-                    if l:file_index ==# "\<ESC>"
-                        return
-                    endif
-                    if ( l:file_index < len( l:split_matches ) )
-                        let &wildignore = l:old_wildignore
-                        execute 'edit ' . l:split_matches[ l:file_index ]
-                        return
-                    else
-                        echom 'Index out of range'
-                    endif
-                endwhile
-            endif
-
-            if ( filereadable( fnameescape( l:matches ) ) )
-                let &wildignore = l:old_wildignore
-                execute 'edit ' . fnameescape( l:matches )
-                return
-            endif
-            continue
-        endfor
-    endif
     echom 'Cannot find a pair for ' . expand( '%:p' )
 endfunction
