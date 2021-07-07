@@ -52,7 +52,13 @@ function! alternator#alternate() abort
             endif
 
             try
-                execute 'edit ' . l:matches[ get( l:, 'file_index', 0 ) ]
+                let l:match  = l:matches[ get( l:, 'file_index', 0 ) ] 
+                let l:buf_nr = bufnr( l:match ) 
+                if l:buf_nr != -1
+                    execute 'buffer ' . l:buf_nr
+                else
+                    execute 'edit ' . l:match
+                endif
             catch
             endtry
 
