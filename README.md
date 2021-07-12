@@ -1,18 +1,46 @@
 # vim-alternator
-Alternating between C/C++ source and header files
 
-## Key features
-Call `:Alternate` to switch between C/C++ header and source files.
+                 _   _ _                        _             ~
+                /_\ | | |_ ___ _ __ _ __   __ _| |_ ___  _ __ ~
+               //_\\| | __/ _ \ '__| '_ \ / _` | __/ _ \| '__|~
+              /  _  \ | ||  __/ |  | | | | (_| | || (_) | |   ~
+              \_/ \_/_|\__\___|_|  |_| |_|\__,_|\__\___/|_|   ~
 
-If there are more matching files, it will go in a cycle, e.g. `Core.hpp -> Core.tpp -> Core.c -> Core.cpp`
+                  Alternating between headers, source files, 
+           template implementations and others with blazing speed!
 
-If you want to change the header extensions, use the `g:alternator_header_extensions` variable.
 
-Same goes for `g:alternator_source_extensions`.
+## Usage
+Just call `:Alternate` and the window will open
+a matching source/header file to the currently opened one.
 
-Defaults:
+## Commands
+Alternate
+* looks for a file with the same name, but a different extension
+* it cycles through all the extensions, starting from the current buffer's extension
+
+## Mappings
+The only mapping this plugin provides is:
+ `<Plug>(Alternate)`
+
+## Configuration
+The file extensions the plugin looks for are stored in the
+following arrays:
 ```
+g:alternator_header_extensions
+g:alternator_source_extensions
+```
+
+Default values are as follows:
+```vim
 let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp', 'ipp' ]
-let g:alternator_source_extensions = [ 'c', 'cpp' ]
-let g:alternator_blacklist_folders = [ '.git', 'node_modules' ]
+let g:alternator_source_extensions = [ 'c', 'cpp'               ]
+```
+
+If there are some folders you do not want to scan,
+the array `g:alternator_blacklist_folders` holds such folder names.
+
+Default value is: 
+```
+[ 'node_modules', '.git' ]
 ```
