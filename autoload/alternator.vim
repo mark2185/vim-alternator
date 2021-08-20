@@ -1,8 +1,6 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
 
-let s:old_wildignore = &wildignore
-
 function! s:enumerate( list ) abort
     let l:result = deepcopy( a:list )
     for i in range( 1, len( l:result ) )
