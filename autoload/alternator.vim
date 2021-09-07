@@ -11,10 +11,13 @@ endfunction
 
 function! s:updateWildignore() abort
     let s:wildignore = &wildignore
-    let l:wildignore_pattern = join( map( deepcopy( g:alternator_blacklist_folders ), { -> printf( "**/%s/**", v:val ) } ), ',' )
+    let l:wildignore_pattern = deepcopy( g:alternator_blacklist_folders )
+                \ ->filter( 'stridx( &wildignore, v:val ) == -1' )
+                \ ->map( { -> printf( "**/%s/**", v:val ) } )
+                \ ->join( ',' )
     if empty(&wildignore)
         let &wildignore = l:wildignore_pattern
-    else
+    elseif !empty( l:wildignore_pattern )
         let &wildignore .= ',' . l:wildignore_pattern
     endif
 endfunction
@@ -40,11 +43,13 @@ function! alternator#alternate() abort
             if len( l:matches ) > 1
                 let l:usr_input = inputlist( ['Which file do you want to open?'] + s:enumerate( l:matches ) )
                 if l:usr_input == 0 || l:usr_input == -1
+                    let &wildignore = s:wildignore
                     return
                 endif
                 let l:file_index = l:usr_input - 1
                 if l:file_index < 0 || l:file_index > len( l:matches ) - 1
                     echo "\nIndex out of bounds"
+                    let &wildignore = s:wildignore
                     return
                 endif
             endif
