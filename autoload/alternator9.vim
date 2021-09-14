@@ -69,6 +69,7 @@ export def alternator9#alternate(): void
             endtry
 
             &wildignore = old_wildignore
+            return
         endif
     endfor
 enddef

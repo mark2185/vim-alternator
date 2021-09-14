@@ -63,6 +63,7 @@ function! alternator#alternate() abort
                     execute 'edit ' . l:match
                 endif
             catch
+                echom 'This should not occur'
             endtry
 
             let &wildignore = s:wildignore
