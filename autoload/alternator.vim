@@ -22,6 +22,15 @@ function! s:updateWildignore() abort
     endif
 endfunction
 
+function! s:findFiles( filename ) abort
+    if executable( 'find' ) == 1
+        return systemlist( 'find . -name ' . a:filename )
+                \ ->map( { -> trim( v:val, './', 1 ) } )
+    else
+        return findfile( a:filename, '**', -1 )
+    endif
+endfunction
+
 function! alternator#alternate() abort
     silent call s:updateWildignore()
 
@@ -38,7 +47,7 @@ function! alternator#alternate() abort
 
     for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
         let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
-        let l:matches = findfile( l:searching_file, '**', -1 )
+        let l:matches = s:findFiles( l:searching_file )
         if !empty( l:matches )
             if len( l:matches ) > 1
                 let l:usr_input = inputlist( ['Which file do you want to open?'] + s:enumerate( l:matches ) )

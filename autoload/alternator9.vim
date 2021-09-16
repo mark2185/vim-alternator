@@ -23,6 +23,15 @@ def UpdateWildignore(): void
     endif
 enddef
 
+def FindFiles( filename: string ): list< string >
+    if executable( 'find' ) == 1
+        return systemlist( 'find . -name ' .. filename )
+                ->map(( _, v ) => trim( v, './', 1 ))
+    else
+        return findfile( filename, '**', -1 )
+    endif
+enddef
+
 export def alternator9#alternate(): void
     UpdateWildignore()
 
@@ -39,7 +48,7 @@ export def alternator9#alternate(): void
 
     for i in range( idx + 1, idx + len( all_extensions ) - 1 )
         const searching_file = printf( '%s.%s', filename, all_extensions[ i % len( all_extensions ) ] )
-        const matches: list< string > = findfile( searching_file, '**', -1 )
+        const matches = FindFiles( searching_file )
         var file_index = 0
         if !empty( matches )
             if len( matches ) > 1
