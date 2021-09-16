@@ -1,14 +1,6 @@
 " alternator.vim - Alternate C/C++ header/source
 " Maintainer: Luka Markušić
 
-function! s:enumerate( list ) abort
-    let l:result = deepcopy( a:list )
-    for i in range( 1, len( l:result ) )
-        let l:result[ i - 1 ] = printf( '%d: %s', i, l:result[ i -  1 ] )
-    endfor
-    return result
-endfunction
-
 function! s:updateWildignore() abort
     let s:wildignore = &wildignore
     let l:wildignore_pattern = deepcopy( g:alternator_blacklist_folders )
@@ -49,7 +41,9 @@ function! alternator#alternate() abort
         let l:matches = s:findFiles( l:searching_file )
         if !empty( l:matches )
             if len( l:matches ) > 1
-                let l:usr_input = inputlist( ['Which file do you want to open?'] + s:enumerate( l:matches ) )
+                let l:usr_input = inputlist(
+                    \[ 'Which file do you want to open?' ]
+                    \ + deepcopy( matches )->map({ index, file -> printf( '%d: %s', index + 1, file ) } ) )
                 if l:usr_input == 0 || l:usr_input == -1
                     let &wildignore = s:wildignore
                     return

@@ -8,6 +8,7 @@ Contents ~
  3. Commands                                              |alternator-commands|
  4. Mappings                                              |alternator-mappings|
  5. Configuration                                    |alternator-configuration|
+ 6. Bonus                                                    |alternator-bonus|
 
 ===============================================================================
                                                       *alternator-introduction*
@@ -63,6 +64,10 @@ Default value is:
 >
   [ 'node_modules', '.git' ]
 <
+===============================================================================
+                                                             *alternator-bonus*
+Bonus ~
 
+If you have 'fd' in your path, it will be used instead of vim's 'findfile'.
 
 vim: ft=help

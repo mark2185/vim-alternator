@@ -2,14 +2,6 @@ vim9script
 
 var old_wildignore = ''
 
-def Enumerate( input: list< string > ): list< string >
-    var result = []
-    for i in range( 1, len( input ) )
-        add( result, printf( '%d: %s', i, input[ i -  1 ] ) )
-    endfor
-    return result
-enddef
-
 def UpdateWildignore(): void
     old_wildignore = &wildignore
     const wildignore_pattern = g:alternator_blacklist_folders[:]
@@ -51,7 +43,10 @@ export def alternator9#alternate(): void
         var file_index = 0
         if !empty( matches )
             if len( matches ) > 1
-                const usr_input: number = inputlist( ['Which file do you want to open?'] + Enumerate( matches ) )
+                const usr_input: number = inputlist(
+                       [ 'Which file do you want to open?' ]
+                     + deepcopy( matches )
+                    -> map( ( index, file ) => printf( '%d: %s', index + 1, file ) ) )
                 if usr_input == 0 || usr_input == -1
                     &wildignore = old_wildignore
                     return

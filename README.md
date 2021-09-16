@@ -44,3 +44,7 @@ Default value is:
 ```
 [ 'node_modules', '.git' ]
 ```
+
+## Bonus
+
+If you have `fd` in your path, it will be used instead of vim's `findfile`.
