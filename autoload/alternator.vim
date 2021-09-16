@@ -23,9 +23,8 @@ function! s:updateWildignore() abort
 endfunction
 
 function! s:findFiles( filename ) abort
-    if executable( 'find' ) == 1
-        return systemlist( 'find . -name ' . a:filename )
-                \ ->map( { -> trim( v:val, './', 1 ) } )
+    if executable( 'fd' ) == 1
+        return systemlist( printf( 'fd %s .', a:filename ) )
     else
         return findfile( a:filename, '**', -1 )
     endif

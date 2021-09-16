@@ -24,9 +24,8 @@ def UpdateWildignore(): void
 enddef
 
 def FindFiles( filename: string ): list< string >
-    if executable( 'find' ) == 1
-        return systemlist( 'find . -name ' .. filename )
-                ->map(( _, v ) => trim( v, './', 1 ))
+    if executable( 'fd' ) == 1
+        return systemlist( printf( 'fd %s .', filename ) )
     else
         return findfile( filename, '**', -1 )
     endif
