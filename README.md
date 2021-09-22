@@ -33,8 +33,8 @@ g:alternator_source_extensions
 
 Default values are as follows:
 ```vim
-let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp', 'ipp' ]
-let g:alternator_source_extensions = [ 'c', 'cpp'               ]
+let g:alternator_header_extensions = [ '.h', '.hpp', '.tpp', '.ipp' ]
+let g:alternator_source_extensions = [ '.c', '.cpp'                 ]
 ```
 
 If there are some folders you do not want to scan,

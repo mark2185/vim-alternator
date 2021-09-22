@@ -30,7 +30,7 @@ export def alternator9#alternate(): void
 
     const filename  = expand( '%:t:r' )
     const extension = expand( '%:e'   )
-    var idx = index( all_extensions, extension )
+    var idx = index( all_extensions, '.' .. extension )
 
     if idx < 0
         echom printf( 'Extension %s not supported', extension )
@@ -38,7 +38,7 @@ export def alternator9#alternate(): void
     endif
 
     for i in range( idx + 1, idx + len( all_extensions ) - 1 )
-        const searching_file = printf( '%s.%s', filename, all_extensions[ i % len( all_extensions ) ] )
+        const searching_file = printf( '%s%s', filename, all_extensions[ i % len( all_extensions ) ] )
         const matches = FindFiles( searching_file )
         var file_index = 0
         if !empty( matches )

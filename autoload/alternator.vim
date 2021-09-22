@@ -29,7 +29,7 @@ function! alternator#alternate() abort
 
     let l:filename  = expand( '%:t:r' )
     let l:extension = expand( '%:e'   )
-    let l:idx = index( l:all_extensions, extension )
+    let l:idx = index( l:all_extensions, '.' . extension )
 
     if l:idx < 0
         echom printf('Extension %s not supported', l:extension)
@@ -37,7 +37,7 @@ function! alternator#alternate() abort
     endif
 
     for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
-        let l:searching_file = printf( '%s.%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
+        let l:searching_file = printf( '%s%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
         let l:matches = s:findFiles( l:searching_file )
         if !empty( l:matches )
             if len( l:matches ) > 1

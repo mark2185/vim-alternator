@@ -54,8 +54,8 @@ The file extensions the plugin looks for are stored in the following arrays:
 <
 Default values are as follows:
 >
-  let g:alternator_header_extensions = [ 'h', 'hpp', 'tpp', 'ipp' ]
-  let g:alternator_source_extensions = [ 'c', 'cpp'               ]
+  let g:alternator_header_extensions = [ '.h', '.hpp', '.tpp', '.ipp' ]
+  let g:alternator_source_extensions = [ '.c', '.cpp'                 ]
 <
 If there are some folders you do not want to scan, the array
 'g:alternator_blacklist_folders' holds such folder names.
