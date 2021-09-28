@@ -75,4 +75,6 @@ export def alternator9#alternate(): void
             return
         endif
     endfor
+
+    echom 'Cannot find a pair for ' .. expand( '%:p' )
 enddef
