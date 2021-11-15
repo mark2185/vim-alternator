@@ -23,7 +23,10 @@ function! s:findFiles( filename ) abort
 endfunction
 
 function! alternator#alternate() abort
-    silent call s:updateWildignore()
+    if &modified && !&hidden
+        echo "No write since last change, cannot alternate!"
+        return
+    endif
 
     let l:all_extensions = g:alternator_header_extensions + g:alternator_source_extensions
 
@@ -35,6 +38,8 @@ function! alternator#alternate() abort
         echom printf('Extension %s not supported', l:extension)
         return
     endif
+
+    silent call s:updateWildignore()
 
     for i in range( l:idx + 1, l:idx + len( l:all_extensions ) - 1 )
         let l:searching_file = printf( '%s%s', l:filename, l:all_extensions[ i % len( l:all_extensions ) ] )
@@ -56,17 +61,13 @@ function! alternator#alternate() abort
                 endif
             endif
 
-            try
-                let l:match  = l:matches[ get( l:, 'file_index', 0 ) ] 
-                let l:buf_nr = bufnr( l:match ) 
-                if l:buf_nr != -1
-                    execute 'buffer ' . l:buf_nr
-                else
-                    execute 'edit ' . l:match
-                endif
-            catch
-                echom 'This should not occur'
-            endtry
+            let l:match  = l:matches[ get( l:, 'file_index', 0 ) ] 
+            let l:buf_nr = bufnr( l:match ) 
+            if l:buf_nr != -1
+                execute 'buffer ' . l:buf_nr
+            else
+                execute 'edit ' . l:match
+            endif
 
             let &wildignore = s:wildignore
             return

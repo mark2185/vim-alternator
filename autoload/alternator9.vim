@@ -24,7 +24,10 @@ def FindFiles( filename: string ): list< string >
 enddef
 
 export def alternator9#alternate(): void
-    UpdateWildignore()
+    if &modified && !&hidden
+        echo "No write since last change, cannot alternate!"
+        return
+    endif
 
     const all_extensions: list< string > = g:alternator_header_extensions + g:alternator_source_extensions
 
@@ -36,6 +39,8 @@ export def alternator9#alternate(): void
         echom printf( 'Extension %s not supported', extension )
         return
     endif
+
+    UpdateWildignore()
 
     for i in range( idx + 1, idx + len( all_extensions ) - 1 )
         const searching_file = printf( '%s%s', filename, all_extensions[ i % len( all_extensions ) ] )
@@ -59,17 +64,14 @@ export def alternator9#alternate(): void
                     return
                 endif
             endif
-            try 
-                const match  = matches[ file_index ]
-                const buf_nr = bufnr( match )
-                if buf_nr != -1
-                    execute 'buffer ' .. buf_nr
-                else
-                    execute 'edit ' .. match
-                endif
-            catch
-                echom 'This should not occur'
-            endtry
+
+            const match  = matches[ file_index ]
+            const buf_nr = bufnr( match )
+            if buf_nr != -1
+                execute 'buffer ' .. buf_nr
+            else
+                execute 'edit ' .. match
+            endif
 
             &wildignore = old_wildignore
             return
