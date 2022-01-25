@@ -10,8 +10,8 @@ let g:alternator_header_extensions = get( g:, 'alternator_header_extensions', [ 
 let g:alternator_source_extensions = get( g:, 'alternator_source_extensions', [ '.c', '.cpp',                ] )
 let g:alternator_blacklist_folders = get( g:, 'alternator_blacklist_folders', [ 'node_modules', '.git'       ] )
 
-if has('patch-8.2.3401')
-    command! Alternate call alternator9#alternate()
+if has('patch-8.2.4053')
+    command! Alternate call alternator9#Alternate()
 else
     command! Alternate call alternator#alternate()
 endif

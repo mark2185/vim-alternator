@@ -23,7 +23,7 @@ def FindFiles( filename: string ): list< string >
     endif
 enddef
 
-export def alternator9#alternate(): void
+export def Alternate(): void
     if &modified && !&hidden
         echo "No write since last change, cannot alternate!"
         return
