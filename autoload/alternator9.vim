@@ -31,11 +31,29 @@ export def Alternate(): void
 
     const all_extensions: list< string > = g:alternator_header_extensions + g:alternator_source_extensions
 
-    const filename  = expand( '%:t:r' )
-    const extension = expand( '%:e'   )
-    var idx = index( all_extensions, '.' .. extension )
+    const buffer_name  = expand( '%:t' )
+    var extension = ''
+    var filename  = ''
+    var len_max = -1
+    for ext in all_extensions
+        # echom 'Checking for... ' .. ext
+        filename = substitute( buffer_name, ext .. '$', '', '' )
+        const length = len( buffer_name ) - len( filename )
+        if length > len_max
+            # echom 'This is better!'
+            len_max = length
+            extension = ext
+        endif
+    endfor
+    filename = substitute( buffer_name, extension .. '$', '', '' )
+
+    var idx = index( all_extensions, extension )
 
     if idx < 0
+        if index( [ 'c', 'cpp' ], &ft ) == -1
+            echom printf( 'Filetype "%s" not supported! Only c and cpp are supported!', &ft )
+            return
+        endif
         echom printf( 'Extension %s not supported', extension )
         return
     endif
