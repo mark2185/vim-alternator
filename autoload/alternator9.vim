@@ -17,7 +17,7 @@ enddef
 
 def FindFiles( filename: string ): list< string >
     if executable( 'fd' ) == 1
-        return systemlist( printf( 'fd --glob %s .', filename ) )
+        return systemlist( printf( 'fd --color=never --glob %s .', filename ) )
     else
         return findfile( filename, '**', -1 )
     endif

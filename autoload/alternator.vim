@@ -16,7 +16,7 @@ endfunction
 
 function! s:findFiles( filename ) abort
     if executable( 'fd' ) == 1
-        return systemlist( printf( 'fd --glob %s .', a:filename ) )
+        return systemlist( printf( 'fd --color=never --glob %s .', a:filename ) )
     else
         return findfile( a:filename, '**', -1 )
     endif
