@@ -16,7 +16,7 @@ endfunction
 
 function! s:findFiles( filename ) abort
     if executable( 'fd' ) == 1
-        return systemlist( printf( 'fd --glob %s .', a:filename ) )
+        return systemlist( printf( 'fd --color=never --glob %s .', a:filename ) )
     else
         return findfile( a:filename, '**', -1 )
     endif
@@ -30,9 +30,23 @@ function! alternator#alternate() abort
 
     let l:all_extensions = g:alternator_header_extensions + g:alternator_source_extensions
 
-    let l:filename  = expand( '%:t:r' )
-    let l:extension = expand( '%:e'   )
-    let l:idx = index( l:all_extensions, '.' . extension )
+    const buffer_name  = expand( '%:t' )
+    let l:extension = ''
+    let l:filename  = ''
+    let l:len_max = -1
+    for ext in l:all_extensions
+        " echom 'Checking for... ' .. ext
+        let l:filename = substitute( l:buffer_name, ext .. '$', '', '' )
+        let l:length = len( l:buffer_name ) - len( l:filename )
+        if l:length > l:len_max
+            " echom 'This is better!'
+            let l:len_max = l:length
+            let l:extension = l:ext
+        endif
+    endfor
+    let l:filename = substitute( l:buffer_name, l:extension .. '$', '', '' )
+
+    let l:idx = index( l:all_extensions, l:extension )
 
     if l:idx < 0
         echom printf('Extension %s not supported', l:extension)
