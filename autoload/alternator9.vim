@@ -16,14 +16,21 @@ def UpdateWildignore(): void
 enddef
 
 def ResetWildignore(): void
+    &wildignore = old_wildignore
 enddef
 
 def FindMatches( filename: string, directory: string ): list< string >
+    var result: list< string > = []
+    UpdateWildignore()
+
     if executable( 'fd' ) == 1
-        return systemlist( printf( 'fd --color=never --glob %s %s', filename, directory ) )
+        result = systemlist( printf( 'fd --color=never --glob %s %s', filename, directory ) )
     else
-        return findfile( filename, directory .. '/**', -1 )
+        result = findfile( filename, directory .. '/**', -1 )
     endif
+
+    ResetWildignore()
+    return result
 enddef
 
 def ChooseMatch( matches: list< string > ): number
@@ -53,7 +60,7 @@ def OpenMatch( match: string ): void
     endif
 enddef
 
-# TODO: find in pwd, and if there are no matches search in %:h
+# TODO: replace all of this with a class when they get implemented
 export def Alternate(): void
     if index( [ 'c', 'cpp' ], &ft ) == -1
         echom printf( 'Filetype "%s" not supported! Only c and cpp are supported!', &ft )
@@ -83,7 +90,7 @@ export def Alternate(): void
     endfor
     filename = substitute( buffer_name, extension .. '$', '', '' )
 
-    var idx = index( all_extensions, extension )
+    const idx = index( all_extensions, extension )
     if idx < 0
         echom printf( 'Extension %s not supported', extension )
         return
@@ -102,7 +109,7 @@ export def Alternate(): void
             return
         else
             const match_index = ChooseMatch( matches )
-            if match_index != -1 
+            if match_index != -1
                 OpenMatch( matches[ match_index ] )
             endif
             ResetWildignore()
@@ -121,7 +128,7 @@ export def Alternate(): void
             return
         else
             const match_index = ChooseMatch( matches )
-            if match_index != -1 
+            if match_index != -1
                 OpenMatch( matches[ match_index ] )
             endif
             ResetWildignore()
