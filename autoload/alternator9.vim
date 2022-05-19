@@ -15,15 +15,51 @@ def UpdateWildignore(): void
     endif
 enddef
 
-def FindFiles( filename: string ): list< string >
+def ResetWildignore(): void
+enddef
+
+def FindMatches( filename: string, directory: string ): list< string >
     if executable( 'fd' ) == 1
-        return systemlist( printf( 'fd --color=never --glob %s .', filename ) )
+        return systemlist( printf( 'fd --color=never --glob %s %s', filename, directory ) )
     else
-        return findfile( filename, '**', -1 )
+        return findfile( filename, directory .. '/**', -1 )
     endif
 enddef
 
+def ChooseMatch( matches: list< string > ): number
+    const usr_input: number = inputlist(
+            [ 'Which file do you want to open?' ]
+            + deepcopy( matches )
+        -> map( ( index, file ) => printf( '%d: %s', index + 1, file ) ) )
+    if usr_input == 0 || usr_input == -1
+        return -1
+    endif
+
+    const match_index = usr_input - 1
+    if match_index < 0 || match_index > len( matches ) - 1
+        echo "\nIndex out of bounds"
+        return -1
+    endif
+
+    return match_index
+enddef
+
+def OpenMatch( match: string ): void
+    const buf_nr = bufnr( match )
+    if buf_nr != -1
+        execute 'buffer ' .. buf_nr
+    else
+        execute 'edit ' .. match
+    endif
+enddef
+
+# TODO: find in pwd, and if there are no matches search in %:h
 export def Alternate(): void
+    if index( [ 'c', 'cpp' ], &ft ) == -1
+        echom printf( 'Filetype "%s" not supported! Only c and cpp are supported!', &ft )
+        return
+    endif
+
     if &modified && !&hidden
         echo "No write since last change, cannot alternate!"
         return
@@ -48,12 +84,7 @@ export def Alternate(): void
     filename = substitute( buffer_name, extension .. '$', '', '' )
 
     var idx = index( all_extensions, extension )
-
     if idx < 0
-        if index( [ 'c', 'cpp' ], &ft ) == -1
-            echom printf( 'Filetype "%s" not supported! Only c and cpp are supported!', &ft )
-            return
-        endif
         echom printf( 'Extension %s not supported', extension )
         return
     endif
@@ -62,39 +93,42 @@ export def Alternate(): void
 
     for i in range( idx + 1, idx + len( all_extensions ) - 1 )
         const searching_file = printf( '%s%s', filename, all_extensions[ i % len( all_extensions ) ] )
-        const matches = FindFiles( searching_file )
-        var file_index = 0
-        if !empty( matches )
-            if len( matches ) > 1
-                const usr_input: number = inputlist(
-                       [ 'Which file do you want to open?' ]
-                     + deepcopy( matches )
-                    -> map( ( index, file ) => printf( '%d: %s', index + 1, file ) ) )
-                if usr_input == 0 || usr_input == -1
-                    &wildignore = old_wildignore
-                    return
-                endif
-
-                file_index = usr_input - 1
-                if file_index < 0 || file_index > len( matches ) - 1
-                    echo "\nIndex out of bounds"
-                    &wildignore = old_wildignore
-                    return
-                endif
+        const matches = FindMatches( searching_file, getcwd() )
+        if empty( matches )
+            continue
+        elseif len( matches ) == 1
+            OpenMatch( matches[ 0 ] )
+            ResetWildignore()
+            return
+        else
+            const match_index = ChooseMatch( matches )
+            if match_index != -1 
+                OpenMatch( matches[ match_index ] )
             endif
-
-            const match  = matches[ file_index ]
-            const buf_nr = bufnr( match )
-            if buf_nr != -1
-                execute 'buffer ' .. buf_nr
-            else
-                execute 'edit ' .. match
-            endif
-
-            &wildignore = old_wildignore
+            ResetWildignore()
             return
         endif
     endfor
 
+    for i in range( idx + 1, idx + len( all_extensions ) - 1 )
+        const searching_file = printf( '%s%s', filename, all_extensions[ i % len( all_extensions ) ] )
+        const matches = FindMatches( searching_file, expand( "%:h" ) )
+        if empty( matches )
+            continue
+        elseif len( matches ) == 1
+            OpenMatch( matches[ 0 ] )
+            ResetWildignore()
+            return
+        else
+            const match_index = ChooseMatch( matches )
+            if match_index != -1 
+                OpenMatch( matches[ match_index ] )
+            endif
+            ResetWildignore()
+            return
+        endif
+    endfor
+
+    ResetWildignore()
     echom 'Cannot find a pair for ' .. expand( '%:p' )
 enddef
